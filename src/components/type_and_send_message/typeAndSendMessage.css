@@ -1,0 +1,47 @@
+.type-and-send-message {
+	top : 80%;
+	left : 0%;
+	width : 100%;
+	height : 20%;	
+	position : absolute;
+	background-color: #e4dbec;
+	border-radius: 15px;
+}
+
+.send-message {
+	top : 0%;
+	left : 80%;
+	width : 20%;
+	height : 100%;	
+	position : absolute;
+	cursor : pointer;
+	border : none;
+	font-size: calc(10px + 2vmin);
+	color : #5c3e77;
+	border-radius: 15px;
+	background-image : url("../../images/send.png");
+	background-repeat : no-repeat;
+	background-position : center;
+}
+
+.type-message {
+	border-radius: 15px;
+	background-color: #e4dbec;
+	border : none;
+	position : absolute;
+	top : 0%;
+	left : 0%;
+	width : 80%;
+	height : 100%;	
+	outline : none;
+	float : left;
+	font-size: calc(10px + 2vmin);
+	color : black;
+}
+
+.send-message:hover {
+	background-image : url("../../images/send_active.png");
+	background-repeat : no-repeat;
+	background-position : center;
+	color : white;
+}
