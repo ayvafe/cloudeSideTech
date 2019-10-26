@@ -19,7 +19,6 @@
 	min-height : 100px;
 	margin: 3% 0;
 	width : 70%;
-	height : 10%; 	
 	left : 5%;
 	position : relative;
 }
@@ -43,6 +42,11 @@
 	position  : absolute;
 	padding : 0% 1% 0% 1%;
 	left : 0%;
-	height : 60%;
 	top : 25%;
+	max-width : 500px;
+}
+
+.message-content > p {
+	max-width : 500px;
+	word-wrap: break-word;
 }
