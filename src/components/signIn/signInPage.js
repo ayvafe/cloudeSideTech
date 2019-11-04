@@ -4,6 +4,7 @@ import './signInPage.css';
 
 class SignInPage extends React.Component {
 	constructor(props) {
+		console.log("AAAAA" + JSON.stringify(props.match))
 		super(props);
 		this.state = {
 			inputType : "password",
@@ -34,6 +35,8 @@ class SignInPage extends React.Component {
 	}
 
 	sendLoginRequest() {
+		console.log("BBBBBBBB  " + JSON.stringify(this.props.location.pathname))
+		this.props.location.pathname = "/user"
 	}
 
 	handleEmailFieldChange	(event) {
@@ -58,19 +61,19 @@ class SignInPage extends React.Component {
 			<div className="sign-in-text">
 			<div>Sign in</div>
 			<div style={{color:this.state.messageColor}}>{this.state.messageText}</div>
-				</div>
-				<div className="email-and-passwd">
-				<div>Email</div>
-				<input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}></input>
-				<div> Password</div>
-				<input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
-				<span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
-				</div>
-				<div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN
-				</div>
-				</div>
-			);
-			}
+			</div>
+			<div className="email-and-passwd">
+			<div>Email</div>
+			<input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}></input>
+			<div> Password</div>
+			<input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
+			<span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
+			</div>
+			<div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN
+			</div>
+			</div>
+		);
 	}
+}
 
-	export default SignInPage;
+export default withRouter(SignInPage)
