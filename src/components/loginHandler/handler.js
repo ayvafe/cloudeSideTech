@@ -30,7 +30,7 @@ function login(username, password) {
         });
 }
 
-	window.location = window.location.origin + "/user";
+window.location = window.location.origin + "/user";
 function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');

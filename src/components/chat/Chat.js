@@ -55,8 +55,9 @@ class Chat extends React.Component {
 
 	}
 
-	addMessage = message =>
+	addMessage = message => {
 		this.setState(state => ({ messages: [...state.messages, message]}))
+  }
 
 	submitMessage = messageString => {
 		if(messageString !== undefined && messageString !== "") {
@@ -71,15 +72,15 @@ class Chat extends React.Component {
 	render() {
 		return (
 			<div className="chat">
-			<div className="messages-list">
-			{(this.state.messages).map((message, index) =>
-				<div key={index} className="message">
-				<div className="message-username">{message.senderId}</div>
-				<div className="message-content"><p>{message.text}</p></div>
-				</div>
-			)}
-			</div>
-			<TypeAndSend  onSubmitMessage={this.submitMessage}/>
+			  <div className="messages-list">
+			    {(this.state.messages).map((message, index) =>
+				    <div key={index} className="message">
+				    <div className="message-username">{message.senderId}</div>
+				    <div className="message-content"><p>{message.text}</p></div>
+				    </div>
+			    )}
+			  </div>
+			  <TypeAndSend  onSubmitMessage={this.submitMessage}/>
 			</div>
 		)
 	}

@@ -1,9 +1,9 @@
 import React from 'react';
-import './User.css';
 import Chat from '../../components/chat/Chat';
 import Room from '../../components/room/Room';
 import Roommates from '../../components/roommates/Roommates.js';
-			
+import './User.css';
+
 class User extends React.Component {
 	constructor(props) {
 		console.log("AAAAA" + JSON.stringify(props.match))
@@ -12,9 +12,9 @@ class User extends React.Component {
 	render() {
 		return (
 			<div className="User">
-			<Chat senderId={this.props.userId} currentRoomId={this.props.currentRoomId}/>
-			<Room/>
-			<Roommates/>
+			  <Chat senderId={this.props.userId} currentRoomId={this.props.currentRoomId}/>
+			  <Room/>
+			  <Roommates/>
 			</div>
 		);
 	}
