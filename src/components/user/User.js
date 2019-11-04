@@ -5,10 +5,12 @@ import Roommates from '../../components/roommates/Roommates.js';
 import './User.css';
 
 class User extends React.Component {
-	constructor(props) {
-		console.log("AAAAA" + JSON.stringify(props.match))
-		super(props);
-	}
+  constructor(props) {
+    super(props);
+  }
+  onClick = () => {
+    this.props.history.push("/");
+  };
 	render() {
 		return (
 			<div className="User">

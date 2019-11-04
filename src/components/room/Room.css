@@ -1,34 +1,34 @@
 #room-bar {
-	background-color: #52376a;
-	font-size: calc(10px + 2vmin);
-	color: white;
-	top : 0;
-	left : 0;
-	width : 20%;
-	height : 100%;	
-	list-style-type: none;
+  background-color: #52376a;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  top : 0;
+  left : 0;
+  width : 20%;
+  height : 100%;	
+  list-style-type: none;
 }
 
 #room-bar > li:hover {
-	background-color: #d7cfe3;
-	cursor: pointer;
+  background-color: #d7cfe3;
+  cursor: pointer;
 }
 
 #room-bar  > li {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-        width : 100%;
-        height : 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width : 100%;
+  height : 10%;
 }
 
 #room-bar  > li:nth-of-type(1) {
-        height : 20%;
-	font-size : 1.5em;
-	font-weight : bold;
+  height : 20%;
+  font-size : 1.5em;
+  font-weight : bold;
 }
 
 #room-bar  > li:nth-of-type(1):hover {
-	background-color: #52376a;
-	cursor: default;
+  background-color: #52376a;
+  cursor: default;
 }

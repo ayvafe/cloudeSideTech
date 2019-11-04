@@ -1,7 +1,6 @@
 import React from 'react';
 import './signInPage.css';
 
-
 class SignInPage extends React.Component {
 	constructor(props) {
 		console.log("AAAAA" + JSON.stringify(props.match))
@@ -11,8 +10,8 @@ class SignInPage extends React.Component {
 			showHideClass : "glyphicon glyphicon-eye-open",
 			email : '',
 			password : '',
-			messageColor : '#818181',
 			messageText : 'Enter your email and password to login into your account',
+      activeClass : false, 
 		};
 	}
 	
@@ -30,10 +29,9 @@ class SignInPage extends React.Component {
 		}
 	}
 
-	sendLoginRequest = () => {
-		console.log("BBBBBBBB  " + JSON.stringify(this.props.location.pathname))
-		this.props.location.pathname = "/user"
-	}
+  sendLoginRequest = () => {
+    this.props.history.push("/user");
+  }
 
 	handleEmailFieldChange = event => {
 		this.setState({email : event.target.value});
@@ -47,7 +45,7 @@ class SignInPage extends React.Component {
 		if(this.state.password.length > 0 && this.state.email.length > 0) {
 			this.sendLoginRequest();
 		} else {
-			this.setState({messageColor : 'red', messageText : "Please enter correct email/password to login"});
+			this.setState({ messageText : "Please enter correct email/password to login", activeClass : true});
 		}
 	}
 
@@ -56,7 +54,7 @@ class SignInPage extends React.Component {
 			<div className="sign-in-page">
 			  <div className="sign-in-text">
 			    <div>Sign in</div>
-			    <div style={color:this.state.messageColor}>{this.state.messageText}</div>
+			    <div className={this.state.activeClass ? "sign-in-message-active": "sign-in-message"}>{this.state.messageText}</div>
 			  </div>
 			  <div className="email-and-passwd">
 			    <div>Email</div>
