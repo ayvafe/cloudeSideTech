@@ -1,0 +1,48 @@
+{
+  "list": [
+    "2a53b49f-1613",
+    "fd782e9c-0700",
+    "f8ff61b6-b13c",
+    "134e470c-d563",
+    "aa967da2-2dc7",
+    "2afe2c0e-f5b0"
+  ],
+  "rooms" : [
+    {
+      "room" : {
+        "id" : "2afe2c0e-f5b0",
+        "name" : "Conversation Fighters"
+      }
+    },
+    {
+      "room" : {
+        "id" : "aa967da2-2dc7",
+        "name" : "Just conversation"
+      }
+    },
+    {
+      "room" : {
+        "id" : "134e470c-d563",
+        "name" : "Language game"
+      }
+    },
+    {
+      "room" : {
+        "id" : "f8ff61b6-b13c",
+        "name" : "Best group chat"
+      }
+    },
+    {
+      "room" : {
+        "id" : "fd782e9c-0700",
+        "name" : "Leaders"
+      }
+    },
+    {
+      "room" : {
+        "id" : "2a53b49f-1613",
+        "name" : "Loosers"
+      }
+    }
+  ]
+}
