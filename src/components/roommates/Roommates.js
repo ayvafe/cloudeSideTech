@@ -1,36 +1,44 @@
 import React from 'react';
-import * as config from '../../config.js';
 import './Roommates.css';
+import SocketContext from '../../socket_context';
 
-
-const n = [ "1", "2", "3", "4"];
-
-class Room extends React.Component {
+class Roommates extends React.Component {
 	constructor(props) {
 		super(props);
     this.state = {
-      rommatesList : [],
+      roommates : []
     }
 	}
+	
+  io = this.props.value.io;
 
-	getRommatesList = event => { 
-		fetch(config.getRoommatesListURL + '&roomId=' + event.target.value + '&userId=' + this.props.userId + '&accessToken=' + this.props.accesToken)
-			.then(res => res.json())
-			.then(result => this.setState({ currentRoomId : result.currentRoom }))
-	}
+  componentDidMount() {
+    this.getRommatesList = () => { 
+      this.io.emit('roommates', "");
+      this.io.on('roommates', function(r) {
+        this.setState({roommates : r})
+      });
+    }
+  }
 
-	render() {
-		return (
-			<ul id="roommates-bar">
-			  <li>Current Room</li>
-			  <li>{this.props.currentRoom}</li>
-			  <li>Roommates</li>
-			  {React.Children.map(n, i => 
-				    <li>Roomates {i}</li>)
-        }
-			</ul>
-		)
-	}
+  render() {
+    return (
+      <ul id="roommates-bar">
+      <li>Current Room</li>
+      <li>{this.props.value.user.currentRoomId}</li>
+      <li>Roommates</li>
+      {(this.state.roommates).map((roommate, index) =>
+        <li>roommate.info</li>
+      )}
+      </ul>
+    )
+  }
 }
 
-export default Room;
+const nestedComponentWithSocket = props => (
+  <SocketContext.Consumer>
+  {value => <Roommates{...props} value={value} />}
+  </SocketContext.Consumer>
+)
+
+export default nestedComponentWithSocket 

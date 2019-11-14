@@ -80,25 +80,40 @@
   top : 56%;
 }
 
-.sign-in-image {
-}
-
-.sign-in-botton {
-  position : relative;
-  background-color : black;
+.sign-in-botton, .sign-up-botton {
   color : white;
   font-weight : bold;
   font-size : 25px;
   line-height : 60px;
   min-height : 60px;
-  top : 79%;
-  left : 10%;
-  height : 8%;
+  height : 100%;
   width : 20%;
   border-radius : 10px;
+  position : absolute;
   box-shadow: 0px 17px 75px #0000000F;
+}
+
+.bottons {
+  top : 79%;
+  position : relative;
+  border-radius : 15px;
+  width: 100%;
+  height : 8%;
+  display : flex;
+}
+
+.sign-in-botton {
+  left : 25%;
+  background-color : black;
   border: 1px solid black;
 }
+
+.sign-up-botton {
+  left : 55%;
+  background-color : #526981;
+  border: 1px solid #526981;
+}
+
 
 #showPasword {
   cursor:pointer;

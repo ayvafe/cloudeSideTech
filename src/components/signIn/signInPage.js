@@ -1,72 +1,117 @@
 import React from 'react';
 import './signInPage.css';
+import * as config from '../../config.js';
+import SocketContext from '../../socket_context';
+import { Redirect} from 'react-router-dom'
 
 class SignInPage extends React.Component {
 	constructor(props) {
-		console.log("AAAAA" + JSON.stringify(props.match))
-		super(props);
-		this.state = {
-			inputType : "password",
-			showHideClass : "glyphicon glyphicon-eye-open",
-			email : '',
-			password : '',
-			messageText : 'Enter your email and password to login into your account',
+    super(props);
+    this.state = {
+      inputType : "password",
+      showHideClass : "glyphicon glyphicon-eye-open",
+      email : '',
+      password : '',
+      messageText : 'Enter your email and password to login into your account',
       activeClass : false, 
-		};
-	}
-	
-	showHidePassword = () => {
-		if(this.state.inputType === 'password') {
-			this.setState({
-				inputType : 'text',
-				showHideClass : "glyphicon glyphicon-eye-close",
-			})
-		} else {
-			this.setState({
-				inputType : 'password',
-				showHideClass : "glyphicon glyphicon-eye-open",
-			})
-		}
-	}
-
-  sendLoginRequest = () => {
-    this.props.history.push("/user");
+      logedIn : false, 
+      signUpClicked : false, 
+    };
   }
 
-	handleEmailFieldChange = event => {
-		this.setState({email : event.target.value});
-	}
+  showHidePassword = () => {
+    if(this.state.inputType === 'password') {
+      this.setState({
+        inputType : 'text',
+        showHideClass : "glyphicon glyphicon-eye-close",
+      })
+    } else {
+      this.setState({
+        inputType : 'password',
+        showHideClass : "glyphicon glyphicon-eye-open",
+      })
+    }
+  }
 
-	handlePasswdFieldChange  = event => {
-		this.setState({password : event.target.value});
-	}
+  sendLoginRequest = () => {
+    const url = [config.serverUrl, ":", config.serverPort,"/login"].join('')
+    const body = {password : this.state.password, email : this.state.email}
 
-	handleLogin = () => { 
-		if(this.state.password.length > 0 && this.state.email.length > 0) {
-			this.sendLoginRequest();
-		} else {
-			this.setState({ messageText : "Please enter correct email/password to login", activeClass : true});
-		}
-	}
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type" : 'application/json'
+      },
+    })
+      .then(res => res.json())
+      .then(resp => {
+        localStorage.setItem('messenger-token', resp.token)
+        this.props.value.updateValue("token", resp.token);
+        this.props.value.updateValue("user", resp.user);
+        this.setState({logedIn : true});
 
-	render() {
-		return (
-			<div className="sign-in-page">
-			  <div className="sign-in-text">
-			    <div>Sign in</div>
-			    <div className={this.state.activeClass ? "sign-in-message-active": "sign-in-message"}>{this.state.messageText}</div>
-			  </div>
-			  <div className="email-and-passwd">
-			    <div>Email</div>
-			    <input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}/>
-			    <div> Password</div>
-			    <input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
-			    <span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
-			  </div>
-			  <div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN</div>
-			</div>
-		);
-	}
+      })
+      .catch(err => {
+        console.error('Error while user login : ' + err);
+      })
+  }
+
+  handleEmailFieldChange = event => {
+    this.setState({email : event.target.value});
+  }
+
+  handlePasswdFieldChange  = event => {
+    this.setState({password : event.target.value});
+  }
+  
+  handleSignUp = () => { 
+    this.setState({signUpClicked : true});
+  }
+
+  handleLogin = () => { 
+    if((this.state.password.length > 0 && this.state.email.length > 0) || this.state.logedIn) {
+      this.sendLoginRequest();
+      this.setState({ messageText : "Please enter correct email/password for login", activeClass : true});
+    }
+  }
+
+  renderFunction() {
+      if (!this.state.logedIn && !this.state.signUpClicked) {
+       return ( <div className="sign-in-page">
+          <div className="sign-in-text">
+            <div>Sign in</div>
+            <div className={this.state.activeClass ? "sign-in-message-active": "sign-in-message"}>{this.state.messageText}</div>
+          </div>
+          <div className="email-and-passwd">
+            <div>Email</div>
+            <input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}/>
+            <div> Password</div>
+            <input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
+            <span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
+          </div>
+          <div className="bottons">
+            <div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN</div>
+            <div className="sign-up-botton" onClick={this.handleSignUp}>SIGN UP</div>
+          </div>
+        </div>
+       )
+      } else if (this.state.signUpClicked) {
+        return (<Redirect to='/signUp' />)
+      } else {
+        return (<Redirect to='/user' />)
+      }
+  }
+
+  render() {
+    return this.renderFunction();
+  }
 }
 
-export default SignInPage
+const nestedComponentWithSocket = props => (
+  <SocketContext.Consumer>
+  {value => <SignInPage{...props} value={value} />}
+  </SocketContext.Consumer>
+)
+
+export default nestedComponentWithSocket 

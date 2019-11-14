@@ -1,0 +1,96 @@
+.sign-up-page {
+  top: 20%;
+  left: 35%;
+  width: 30%;
+  height: 60%;
+  color : #5c3e77;
+  position : absolute;
+  background-color  : #ffffff;
+  border-radius : 15px;
+  min-height : 560px;
+  box-shadow: 0px 27px 75px #0000000F;
+}
+
+.sign-up-text {
+  position : absolute;
+  border-radius : 15px;
+  top : 5%;
+  width: 100%;
+  height: 15%;
+  text-align: center;
+  color : black;
+  font-weight : bold;
+  font: 3em Circular;
+}
+
+.sign-up-page > input {
+  position : absolute;
+  border-radius : 10px;
+  width : 80%;
+  height : 10%;
+  left : 10%;
+  border: 1px solid #DEDEDE;
+  font-size : 25px;
+  text-align : left;
+}
+
+.sign-up-page > input:nth-of-type(1) {
+  top : 20%;
+}
+
+.sign-up-page > input:nth-of-type(2) {
+  top : 35%;
+}
+
+.sign-up-page > input:nth-of-type(3) {
+  top : 50%;
+}
+
+.passwd {
+  background-color : white;
+  position : absolute;
+  border-radius : 10px;
+  width : 80%;
+  top : 65%;
+  height : 10%;
+  left : 10%;
+  box-shadow: 0px 27px 75px #0000000F;
+  border: 1px solid #DEDEDE;
+}
+
+.passwd > input {
+  position  : absolute;
+  font-size : 25px;
+  text-align : left;
+  border-width : 0px;
+  width : 92%;
+  height : 98%;
+  left : 0;
+  border-radius : 10px;
+}
+
+.signup-botton {
+  color : white;
+  font-weight : bold;
+  font-size : 25px;
+  line-height : 60px;
+  min-height : 60px;
+  width : 20%;
+  position : absolute;
+  box-shadow: 0px 17px 75px #0000000F;
+  top : 85%;
+  height : 8%;
+  left : 40%;
+  background-color : black;
+  border: 1px solid black;
+  border-radius : 10px;
+}
+
+#showhidePasword {
+  cursor:pointer;
+  left : 93%;
+  width: 5%;
+  height: 30%;
+  top : 35%;
+  position : absolute;
+}

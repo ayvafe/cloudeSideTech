@@ -3,6 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bcrypt": "^3.0.6",
+    "cors": "^2.8.5",
+    "express": "^4.16.3",
+    "express-session": "^1.17.0",
+    "formidable": "^1.2.1",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.7.7",
+    "mysql": "^2.17.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "socket.io": "^2.3.0",
+    "socketio-auth": "^0.1.1",
     "@babel/core": "7.6.0",
     "@svgr/webpack": "4.3.2",
     "@typescript-eslint/eslint-plugin": "^2.2.0",
@@ -69,10 +82,15 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "dev": "nodemon -w src --exec \"babel-node src --presets env,stage-0\""
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "parserOptions": {
+      "ecmaVersion": 7,
+      "sourceType": "module"
+    }
   },
   "browserslist": {
     "production": [
@@ -137,6 +155,39 @@
   "babel": {
     "presets": [
       "react-app"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-standard": "^3.1.0"
+  },
+  "author": "Naren Arya",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narenaryan/node-jwt-integ.git"
+  },
+  "keywords": [
+    "node",
+    "jwt",
+    "auth"
+  ],
+  "bugs": {
+    "url": "https://github.com/narenaryan/node-jwt-integ/issues"
+  },
+  "homepage": "https://github.com/narenaryan/node-jwt-integ#readme",
+  "extends": "standard",
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "semi": [
+      2,
+      "always"
     ]
   }
 }

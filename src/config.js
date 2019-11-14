@@ -1,4 +1,2 @@
-export const changeRoomRequestUrl = "This action is invalid!"
-export const getRoommatesListURL = 'hello I am a constant';
-export const getMessagesUrl = 'hello I am also a constant';
-
+export const serverUrl = 'https://192.168.1.25';
+export const serverPort = '5004';
