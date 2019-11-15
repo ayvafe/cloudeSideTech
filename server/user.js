@@ -2,7 +2,7 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
   _id: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   firstName: {
@@ -19,11 +19,15 @@ const schema = new Schema({
   },
   currentRoomId : {
     type: String,
-    required: true
+    required: false 
   },
   password: {
     type: String,
     required: true
+  },
+  socket_id: {
+    type: String,
+    required: false 
   }
 });
 
