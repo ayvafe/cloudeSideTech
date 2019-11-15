@@ -28,8 +28,10 @@ class Room extends React.Component {
   }
 
   onClick  = event => { 
-    this.props.value.io.emit('joinRoom', event.target.id);
-    this.props.value.updateValue("user.currentRoomId", event.target.id);
+    if(event.target.id) {
+      this.props.value.io.emit('joinRoom', event.target.id);
+      this.props.value.updateValue("user.currentRoomId", event.target.id);
+    }
   }
 
   render() {
