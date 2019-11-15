@@ -7,11 +7,10 @@ import * as Utilities from '../../utils/utilities.js';
 import { Redirect} from 'react-router-dom'
 
 class User extends React.Component {
-  state : {
-    logedIn : true;
+  state = {
+    logedIn : true,
   }
   
-
   componentDidMount() {
     this.timeout = setTimeout(() => {
       if (!Utilities.isLoggedIn()) {

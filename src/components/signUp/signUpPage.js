@@ -15,6 +15,7 @@ class SignUpPage extends React.Component {
       firstname : '',
       lastname : '',
       logedIn : false,
+      errMessage : '',
     };
   }
 
@@ -32,20 +33,20 @@ class SignUpPage extends React.Component {
     }
   }
   
-  handleFirstnameFieldChange = event => {
-    this.setState({firstname : event.target.value});
+  handleFirstnameFieldChange = (ev) => {
+    this.setState({firstname : ev.target.value});
   }
 
-  handleLastnameFieldChange = event => {
-    this.setState({lastname : event.target.value});
+  handleLastnameFieldChange = (ev) => {
+    this.setState({lastname : ev.target.value});
   }
 
-  handleEmailFieldChange = event => {
-    this.setState({email : event.target.value});
+  handleEmailFieldChange = (ev) => {
+    this.setState({email : ev.target.value});
   }
 
-  handlePasswdFieldChange  = event => {
-    this.setState({password : event.target.value});
+  handlePasswdFieldChange  = (ev) => {
+    this.setState({password : ev.target.value});
   }
   
   sendSignUpRequest = () => { 
@@ -68,11 +69,18 @@ class SignUpPage extends React.Component {
         .then(res => res.json())
         .then(resp => {
           localStorage.setItem('messenger-token', resp.token)
-          this.props.value.updateValue("token", resp.token);
-          this.props.value.updateValue("user", resp.user);
-          this.setState({logedIn : true})
+          if(resp.token && resp.user) {
+            this.props.value.updateValue("token", resp.token);
+            this.props.value.updateValue("user", resp.user);
+            this.setState({logedIn : true})
+          } else if(resp.data && resp.data.title) {
+            this.setState({errMessage : resp.data.title})
+          } else {
+            this.setState({errMessage : "Error to sign up"})
+          }
         })
         .catch(err => {
+          this.setState({errMessage : "Error to sign up"})
           console.error('Error while user login : ' + err);
         })
     }
@@ -80,21 +88,34 @@ class SignUpPage extends React.Component {
   
   checkData = () => { 
     const t = this.state; 
-    if(t.password.length < 10 || t.email.length < 5
-      || t.lastname.length <= 0 || t.firstname.length <= 0) {
+    if( t.password.length < 8 ) { 
+      this.setState({errMessage : "Password should have more than 7 characters"})
       return false
+    } else if ( t.email.length < 5 ) {
+      this.setState({errMessage : "Please set correct email"})
+      return false
+    } else if ( t.lastname.length <= 1 ) {
+      this.setState({errMessage : "Please set correct last name"})
+      return false
+    } else if ( t.firstname.length <= 1 ) {
+      this.setState({errMessage : "Please set correct first name"})
+      return false
+    } else {
+      this.setState({errMessage : ""})
+      return true 
     }
-
-    return true 
   }
 
   render() {
     return (
       !this.state.logedIn ? (
         <div className="sign-up-page">
-          <div className="sign-up-text">Sign Up</div>
-          <input type="text" value={this.state.lastname} placeholder="Firstname..." onChange={this.handleFirstnameFieldChange}/>
-          <input type="text" value={this.state.firstname} placeholder="Lastname..."  onChange={this.handleLastnameFieldChange}/>
+          <div className="sign-up">
+            <div className="sign-up-text">Sign Up</div>
+            <div className="sign-up-error">{this.state.errMessage}</div>
+          </div>
+          <input type="firstname" value={this.state.firstname} placeholder="First name..." onChange={this.handleFirstnameFieldChange}/>
+          <input type="lastname" value={this.state.lastname} placeholder="Last name..."  onChange={this.handleLastnameFieldChange}/>
           <input type="email" value={this.state.email} placeholder="Email"  onChange={this.handleEmailFieldChange}/>
           <div className="passwd">
             <input type={this.state.inputType} value={this.state.password} placeholder="Password" onChange={this.handlePasswdFieldChange}/>

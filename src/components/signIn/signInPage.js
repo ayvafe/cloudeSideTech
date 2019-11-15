@@ -5,7 +5,7 @@ import SocketContext from '../../socket_context';
 import { Redirect} from 'react-router-dom'
 
 class SignInPage extends React.Component {
-	constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       inputType : "password",
@@ -46,13 +46,19 @@ class SignInPage extends React.Component {
     })
       .then(res => res.json())
       .then(resp => {
-        localStorage.setItem('messenger-token', resp.token)
-        this.props.value.updateValue("token", resp.token);
-        this.props.value.updateValue("user", resp.user);
-        this.setState({logedIn : true});
-
+        if(resp.token && resp.user) {
+          localStorage.setItem('messenger-token', resp.token)
+          this.props.value.updateValue("token", resp.token);
+          this.props.value.updateValue("user", resp.user);
+          this.setState({logedIn : true});
+        } else if(resp.data && resp.data.title) {
+          this.setState({messageText : resp.data.title})
+        } else {
+          this.setState({messageText : "Error to sign up"})
+        }
       })
       .catch(err => {
+        this.setState({messageText : "Error to sign up"})
         console.error('Error while user login : ' + err);
       })
   }
@@ -64,15 +70,20 @@ class SignInPage extends React.Component {
   handlePasswdFieldChange  = event => {
     this.setState({password : event.target.value});
   }
-  
+
   handleSignUp = () => { 
     this.setState({signUpClicked : true});
   }
 
   handleLogin = () => { 
-    if((this.state.password.length > 0 && this.state.email.length > 0) || this.state.logedIn) {
+    const t = this.state; 
+    if( t.password.length < 8 ) { 
+      this.setState({messageText : "Password should have more than 7 characters", activeClass : true})
+    } else if ( t.email.length < 5 ) {
+      this.setState({messageText : "Please set correct email", activeClass : true})
+    } else {
+      this.setState({messageText : ""})
       this.sendLoginRequest();
-      this.setState({ messageText : "Please enter correct email/password for login", activeClass : true});
     }
   }
 

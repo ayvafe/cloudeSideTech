@@ -4,8 +4,6 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const serverPort = "5004";
-const socketAuth = require('socketio-auth');
-const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 global.mongoose = mongoose;
 
@@ -14,14 +12,27 @@ let auth = require('./auth');
 let middleware = require('./middleware');
 
 // Connect to database
-mongoose.connect(`mongodb://${config.server}/${config.database}`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Successfully connected to the database');
-}).catch(err => {
-  console.log('error connecting to the database  ' + err);
-  process.exit();
+//mongoose.connect(`mongodb://${config.server}/${config.database}`, {
+//var t = mongoose.connect('mongodb://feya:testing@127.0.0.1:27107', {
+//  useNewUrlParser: true,
+//  useUnifiedTopology: true,
+//  connectTimeoutMS : 60000,
+//  socketTimeoutMS : 10000,
+//  maxIdleTimeMS : 10000
+//}, (error) => {
+//  if (!error) {
+//    console.log('Successfully connected to the database');
+//  } else {
+//    console.log('error connecting to the database  ' + error);
+//    process.exit()
+//  }
+//});
+
+var uri = 'mongodb://localhost/28015';
+var options = {useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 1800000};
+mongoose.createConnection(uri, options, function (err) {
+  if (!err){
+    console.log("Connection successful");}
 });
 
 //Load models
@@ -38,15 +49,31 @@ function main () {
   const port = process.env.PORT || serverPort;
   const app = express(); 
   const server = http.createServer(app);
+  io = require('socket.io')(server);
+  
   app.use(bodyParser.json());
+
+  // Enable CORS
+  app.use(function (req, res, next) {
+    const origin = req.get('origin');
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma');
+    if (req.method === 'OPTIONS') {
+      res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+      return res.status(200).json({});
+    }
+    next();
+  });
+
   app.post('/login', auth.login);
   app.get('/check_token', middleware.checkToken);
-  app.get('/sign_up', auth.signup);
   app.get('/rooms_list', middleware.getRoomsList);
+  app.post('/sign_up', auth.signup);
   app.listen(port, function() {
     console.log('Server up and running at %s port', port);
   });
-  io = socketIo.listen(server);
   handleWebSockects();
 }
 
@@ -57,7 +84,8 @@ function sendRoommates(id) {
       return c;
     })
     .catch(err => {
-      return done(err);
+      console.log(" ERROR while trying to get user data : " + err);
+      return '';
     });
 } 
 
@@ -67,7 +95,8 @@ function getUserRoomID(username) {
       return user.currentRoomId;
     })
     .catch(err => {
-      return done(err);
+      console.log(" ERROR while trying to get user data : " + err);
+      return '';
     });
 } 
 
@@ -80,7 +109,8 @@ function addRoomNumber(s_id, r_id) {
       });
     })
     .catch(err => {
-      return done(err);
+      console.log(" ERROR while trying to get user data : " + err);
+      return '';
     });
 } 
 
@@ -90,7 +120,8 @@ function getUserName(id) {
       return user.firstName + ' ' + user.lastName;
     })
     .catch(err => {
-      return done(err);
+      console.log(" ERROR while trying to get user data : " + err);
+      return '';
     });
 } 
 
@@ -103,7 +134,8 @@ function addSocketId(ei, id) {
       });
     })
     .catch(err => {
-      return done(err);
+      console.log(" ERROR while trying to get user data : " + err);
+      return '';
     });
 } 
 

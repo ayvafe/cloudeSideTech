@@ -4,7 +4,7 @@ import UserPage from '../../components/user/User';
 import SignInPage from '../../components/signIn/signInPage';
 import SignUpPage from '../../components/signUp/signUpPage';
 import notFoundPage from '../../components/notFoundPage';
-import openSocket from 'socket.io-client';
+import socket from 'socket.io-client';
 import SocketContext from '../../socket_context';
 import { Route, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom'
 import * as config from '../../config.js';
@@ -29,7 +29,7 @@ class App extends React.Component {
     }
   }
 
-  io = openSocket(wsURL, {
+  io = socket(wsURL, {
     secure: true,
     rejectUnauthorized: false,
   })
@@ -42,7 +42,7 @@ class App extends React.Component {
 
     this.io.onclose = () => {
       console.log('WebSocket client disconnected')
-      this.io = openSocket(wsURL, {
+      this.io = socket(wsURL, {
         secure: true,
         rejectUnauthorized: false,
       })
@@ -53,10 +53,10 @@ class App extends React.Component {
 
     this.io.onerror = error => {
       try {
-      this.io = openSocket(wsURL, {
-        secure: true,
-        rejectUnauthorized: false,
-      })
+        this.io = socket(wsURL, {
+          secure: true,
+          rejectUnauthorized: false,
+        })
         this.setState({
           wsConnected : false
         })

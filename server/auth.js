@@ -94,6 +94,7 @@ passport.use('local-signin', new LocalStrategy({
 
 //handle user signup
 var signup = (req, res, next) => {
+  console.log("Sign Up request recieved");
   passport.authenticate('local-signup', (err, user) => {
     if (err) {
       return res.status(500).json({
@@ -140,6 +141,7 @@ var signup = (req, res, next) => {
 
 //handle user signin
 var login = (req, res, next) => {
+  console.log("Login request recieved");
   passport.authenticate('local-signin', (err, user) => {
     if (err) {
       return res.status(500).json({
