@@ -64,7 +64,7 @@ function main () {
 }
 
 function sendRoommates(id) {
-  User.findOne({'id': id}).exec()
+  User.findOne({'socket_id': id}).exec()
     .then(user => { 
       var c = io.sockets.clients(user.currentRoomId);
       return c;
@@ -75,8 +75,8 @@ function sendRoommates(id) {
     });
 } 
 
-function getUserRoomID(username) {
-  User.findOne({'email': username}).exec()
+function getUserRoomID(id) {
+  User.findOne({'socket_id': id}).exec()
     .then(user => { 
       return user.currentRoomId;
     })
@@ -87,7 +87,7 @@ function getUserRoomID(username) {
 } 
 
 function addRoomNumber(s_id, r_id) {
-  User.findOne({'id': r_id}).exec()
+  User.findOne({'socket_id': s_id}).exec()
     .then(user => { 
       let u = User.findOneAndUpdate(user, {"currentRoomId" : r_id}, {
         new: true,
@@ -101,7 +101,7 @@ function addRoomNumber(s_id, r_id) {
 } 
 
 function getUserName(id) {
-  User.findOne({'id': r_id}).exec()
+  User.findOne({'socket_id': r_id}).exec()
     .then(user => { 
       return user.firstName + ' ' + user.lastName;
     })
@@ -114,7 +114,7 @@ function getUserName(id) {
 function addSocketId(ei, id) {
   User.findOne({'email': e }).exec()
     .then(user => { 
-      let u = User.findOneAndUpdate(user, {"id" : id}, {
+      let u = User.findOneAndUpdate(user, {"socket_id" : id}, {
         new: true,
         upsert: true
       });
@@ -129,7 +129,7 @@ function handleWebSockects() {
   console.log("Running socket");
   io.on('connection', function (socket) {
     socket.on("email", function (e) {
-      addSocketId(e,socket.id);
+      addSocketId(e, socket.id);
     });
 
     socket.on('message', function (msg) {
