@@ -4,7 +4,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const serverPort = "5004";
-const mongoose = require("mongoose");
+var mongoose = require('mongoose');
 global.mongoose = mongoose;
 
 let config = require('./config');
@@ -12,28 +12,14 @@ let auth = require('./auth');
 let middleware = require('./middleware');
 
 // Connect to database
-//mongoose.connect(`mongodb://${config.server}/${config.database}`, {
-//var t = mongoose.connect('mongodb://feya:testing@127.0.0.1:27107', {
-//  useNewUrlParser: true,
-//  useUnifiedTopology: true,
-//  connectTimeoutMS : 60000,
-//  socketTimeoutMS : 10000,
-//  maxIdleTimeMS : 10000
-//}, (error) => {
-//  if (!error) {
-//    console.log('Successfully connected to the database');
-//  } else {
-//    console.log('error connecting to the database  ' + error);
-//    process.exit()
-//  }
-//});
+var mongoDB = 'mongodb://127.0.0.1';
+mongoose.connect(mongoDB, { useNewUrlParser: true });
 
-var uri = 'mongodb://localhost/28015';
-var options = {useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 1800000};
-mongoose.createConnection(uri, options, function (err) {
-  if (!err){
-    console.log("Connection successful");}
-});
+//Get the default connection
+var db = mongoose.connection;
+
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 //Load models
 const User = require('./user.js');
@@ -49,7 +35,7 @@ function main () {
   const port = process.env.PORT || serverPort;
   const app = express(); 
   const server = http.createServer(app);
-  io = require('socket.io')(server);
+  io = require('socket.io').listen(server);
   
   app.use(bodyParser.json());
 
