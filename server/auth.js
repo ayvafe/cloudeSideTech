@@ -9,8 +9,8 @@ const User = require('./user.js');
 var error = (res) => {
   return res.status(500).json({
     status: 'error',
-    code: '500',
-    message: 'Something is wrong. Please try again later.'
+    code : '500',
+    data : 'Something is wrong. Please try again later.'
   });
 }
 
@@ -104,7 +104,6 @@ var login = (req, res, next) => {
               }
             });
           } else {
-            console.log("Login request recieved 66666666666 " );
             const token = jwt.sign(
               {
                 email: user.email,
@@ -116,7 +115,6 @@ var login = (req, res, next) => {
                 expiresIn: '24h' // expires in 24 hours
               }
             );
-            console.log("Login request recieved 7777777" );
             return res.status(200).json({
               status: 'success',
               code: '200',
