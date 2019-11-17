@@ -2,7 +2,7 @@ import React from 'react';
 import './signInPage.css';
 import * as config from '../../config.js';
 import SocketContext from '../../socket_context';
-import { Redirect} from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 class SignInPage extends React.Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class SignInPage extends React.Component {
       password : '',
       messageText : 'Enter your email and password to login into your account',
       activeClass : false, 
-      logedIn : false, 
+      logedIn : false,
       signUpClicked : false, 
     };
   }
@@ -46,19 +46,20 @@ class SignInPage extends React.Component {
     })
       .then(res => res.json())
       .then(resp => {
-        if(resp.token && resp.user) {
+        if(resp.data && resp.data.token && resp.data.user) {
+          resp = resp.data;
+          this.setState({ logedIn : true })
           localStorage.setItem('messenger-token', resp.token)
           this.props.value.updateValue("token", resp.token);
           this.props.value.updateValue("user", resp.user);
-          this.setState({logedIn : true});
         } else if(resp.data && resp.data.title) {
           this.setState({messageText : resp.data.title})
         } else {
-          this.setState({messageText : "Error to sign up"})
+          this.setState({messageText : "Error to login"})
         }
       })
       .catch(err => {
-        this.setState({messageText : "Error to sign up"})
+        this.setState({messageText : "Error to login"})
         console.error('Error while user login : ' + err);
       })
   }
@@ -88,34 +89,33 @@ class SignInPage extends React.Component {
   }
 
   renderFunction() {
-      if (!this.state.logedIn && !this.state.signUpClicked) {
-       return ( <div className="sign-in-page">
-          <div className="sign-in-text">
-            <div>Sign in</div>
-            <div className={this.state.activeClass ? "sign-in-message-active": "sign-in-message"}>{this.state.messageText}</div>
-          </div>
-          <div className="email-and-passwd">
-            <div>Email</div>
-            <input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}/>
-            <div> Password</div>
-            <input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
-            <span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
-          </div>
-          <div className="bottons">
-            <div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN</div>
-            <div className="sign-up-botton" onClick={this.handleSignUp}>SIGN UP</div>
-          </div>
-        </div>
-       )
-      } else if (this.state.signUpClicked) {
-        return (<Redirect to='/signUp' />)
-      } else {
-        return (<Redirect to='/user' />)
-      }
   }
 
   render() {
-    return this.renderFunction();
+    if (this.state.logedIn === true) {
+      return <Redirect to='/user' />
+    } else if(this.state.signUpClicked === true) {
+      return <Redirect to='/signUp' />
+    }
+    return ( 
+      <div className="sign-in-page">
+       <div className="sign-in-text">
+         <div>Sign in</div>
+         <div className={this.state.activeClass ? "sign-in-message-active": "sign-in-message"}>{this.state.messageText}</div>
+       </div>
+       <div className="email-and-passwd">
+         <div>Email</div>
+         <input type="email" value={this.state.email} onChange={this.handleEmailFieldChange}/>
+         <div> Password</div>
+         <input type={this.state.inputType} value={this.state.password} onChange={this.handlePasswdFieldChange}/>
+         <span id="showPasword" className={this.state.showHideClass} onClick={this.showHidePassword}></span>
+       </div>
+       <div className="bottons">
+         <div className="sign-in-botton" onClick={this.handleLogin}>SIGN IN</div>
+         <div className="sign-up-botton" onClick={this.handleSignUp}>SIGN UP</div>
+       </div>
+     </div>
+    )
   }
 }
 

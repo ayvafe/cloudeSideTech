@@ -14,8 +14,8 @@ class SignUpPage extends React.Component {
       password : '',
       firstname : '',
       lastname : '',
-      logedIn : false,
       errMessage : '',
+      logedIn : true,
     };
   }
 
@@ -68,11 +68,12 @@ class SignUpPage extends React.Component {
       })
         .then(res => res.json())
         .then(resp => {
-          localStorage.setItem('messenger-token', resp.token)
-          if(resp.token && resp.user) {
+          if(resp.data && resp.data.token && resp.data.user) {
+            resp = resp.data;
+            localStorage.setItem('messenger-token', resp.token)
             this.props.value.updateValue("token", resp.token);
             this.props.value.updateValue("user", resp.user);
-            this.setState({logedIn : true})
+            this.setState({ logedIn: true })
           } else if(resp.data && resp.data.title) {
             this.setState({errMessage : resp.data.title})
           } else {
@@ -107,8 +108,10 @@ class SignUpPage extends React.Component {
   }
 
   render() {
+    if (this.state.logedIn === true) {
+      return <Redirect to='/user' />
+    }
     return (
-      !this.state.logedIn ? (
         <div className="sign-up-page">
           <div className="sign-up">
             <div className="sign-up-text">Sign Up</div>
@@ -123,9 +126,6 @@ class SignUpPage extends React.Component {
           </div>
           <div className="signup-botton" onClick={this.sendSignUpRequest}>SIGN UP</div>
         </div>
-      ) : (
-        <Redirect to='/user' />
-      )
     );
   }
 }
