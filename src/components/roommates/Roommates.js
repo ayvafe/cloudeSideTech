@@ -6,29 +6,35 @@ class Roommates extends React.Component {
 	constructor(props) {
 		super(props);
     this.state = {
-      roommates : []
+      roommates : [],
+      currentRoomName : ""
     }
 	}
-	
-  io = this.props.value.io;
 
   componentDidMount() {
-    this.getRommatesList = () => { 
-      this.io.emit('roommates', "");
-      this.io.on('roommates', function(r) {
-        this.setState({roommates : r})
-      });
-    }
+    let io = this.props.value.io;
+    io.emit('roommates', "");
+    io.on('roommates', (r) => {
+      this.setState({roommates : r})
+    });
+
+    io.emit('roomName', this.props.value.state.user.currentRoomId);
+    io.on('roomName', (rm) => {
+      this.setState({currentRoomName : rm})
+    });
   }
 
   render() {
+      (this.state.roommates).forEach((r) =>
+        console.log("ROOMAAATE ", r)
+      )
     return (
       <ul id="roommates-bar">
       <li>Current Room</li>
-      <li>{this.props.value.user.currentRoomId}</li>
+      <li>{this.state.currentRoomName}</li>
       <li>Roommates</li>
-      {(this.state.roommates).map((roommate, index) =>
-        <li>roommate.info</li>
+      {(this.state.roommates).map((r) =>
+        <li>{r}</li>
       )}
       </ul>
     )

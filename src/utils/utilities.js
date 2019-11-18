@@ -8,12 +8,16 @@ export const isLoggedIn = async () => {
     return false;
   }
   try {
-    let res = await axios.get( url, {
-      "authorization" : t
-    })
-    return true;
+    var res = await axios.get( url, { headers: { authorization : t }})
+    if (!res.status === 200) {
+      return false;
+    }
+    if(res.data && res.data.success) {
+      return true;
+    }
+    return false;
   } catch (err) {
     console.log("Error to check token " + err);
-    return  false;
+    return false;
   }
 };

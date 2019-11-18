@@ -1,19 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http');
 const path = require('path');
 const fs = require('fs');
-const serverPort = "5004";
+const serverPort = "8080";
 var mongoose = require('mongoose');
 global.mongoose = mongoose;
+const User = require('./user.js');
+const Room = require('./room.js');
 
-let config = require('./config');
 let auth = require('./auth');
 let middleware = require('./middleware');
 
 // Connect to database
-var mongoDB = 'mongodb://127.0.0.1';
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+var mongoDB = 'mongodb://127.0.0.1:28105/messenger-app';
+mongoose.connect(mongoDB, { useNewUrlParser: true,  useUnifiedTopology: true });
 
 //Get the default connection
 var db = mongoose.connection;
@@ -21,22 +21,11 @@ var db = mongoose.connection;
 //Bind connection to error event (to get notification of connection errors)
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-//Load models
-const User = require('./user.js');
-
-//Generating uinique ID for each WebSocket client
-const getUniqueID = () => {
-  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-  return s4() + s4() + '-' + s4();
-};
-
 // Starting point of the server
 function main () {
   const port = process.env.PORT || serverPort;
   const app = express(); 
-  const server = http.createServer(app);
-  io = require('socket.io').listen(server);
-  
+
   app.use(bodyParser.json());
 
   // Enable CORS
@@ -54,99 +43,105 @@ function main () {
   });
 
   app.post('/login', auth.login);
-  app.get('/check_token', middleware.checkToken);
-  app.get('/rooms_list', middleware.getRoomsList);
   app.post('/sign_up', auth.signup);
-  app.listen(port, function() {
+  app.get('/login_with_token', auth.login_with_token);
+  app.get('/check_token', auth.checkToken, auth.index);
+  app.get('/rooms_list', middleware.getRoomsList);
+  const server = app.listen(port, function() {
     console.log('Server up and running at %s port', port);
   });
+  var socket = require('socket.io');
+  io = socket(server);
   handleWebSockects();
+  middleware.importRoomsIntoDb();
 }
 
-function sendRoommates(id) {
-  User.findOne({'socket_id': id}).exec()
+function sendRoommates(s) {
+  io.of('/').in(s.currentRoomId).clients((error, clients) => {
+    if (error) {
+      throw error
+      console.log(error);
+      return;
+    }
+    let r = [];
+    for (i of clients) {
+      if(io.sockets.connected[i].email != s.email) {
+        r.push(io.sockets.connected[i].username);
+      }
+    }
+    s.emit("roommates", r);
+  });
+}
+
+function addRoomNumber(e, r_id) {
+  User.findOne({'email': e}).exec()
     .then(user => { 
-      var c = io.sockets.clients(user.currentRoomId);
-      return c;
+      user.currentRoomId = r_id
+      user.save();
     })
     .catch(err => {
       console.log(" ERROR while trying to get user data : " + err);
-      return '';
     });
 } 
 
-function getUserRoomID(id) {
-  User.findOne({'socket_id': id}).exec()
-    .then(user => { 
-      return user.currentRoomId;
+function sendRoomName(rm, socket) {
+  Room.findById(rm).exec()
+    .then(room => {
+      if(room != null) {
+        socket.emit("roomName", room.name);
+      }
     })
     .catch(err => {
       console.log(" ERROR while trying to get user data : " + err);
-      return '';
-    });
-} 
-
-function addRoomNumber(s_id, r_id) {
-  User.findOne({'socket_id': s_id}).exec()
-    .then(user => { 
-      let u = User.findOneAndUpdate(user, {"currentRoomId" : r_id}, {
-        new: true,
-        upsert: true
-      });
-    })
-    .catch(err => {
-      console.log(" ERROR while trying to get user data : " + err);
-      return '';
-    });
-} 
-
-function getUserName(id) {
-  User.findOne({'socket_id': r_id}).exec()
-    .then(user => { 
-      return user.firstName + ' ' + user.lastName;
-    })
-    .catch(err => {
-      console.log(" ERROR while trying to get user data : " + err);
-      return '';
-    });
-} 
-
-function addSocketId(ei, id) {
-  User.findOne({'email': e }).exec()
-    .then(user => { 
-      let u = User.findOneAndUpdate(user, {"socket_id" : id}, {
-        new: true,
-        upsert: true
-      });
-    })
-    .catch(err => {
-      console.log(" ERROR while trying to get user data : " + err);
-      return '';
     });
 } 
 
 function handleWebSockects() {
   console.log("Running socket");
   io.on('connection', function (socket) {
+    socket.currentRoomId = 'default';
+    socket.username = '';
     socket.on("email", function (e) {
-      addSocketId(e, socket.id);
+      socket.email = e;
+      User.findOne({'email': e}).exec()
+        .then(user => {
+          if(user != null) {
+            socket.leave(socket.currentRoomId);
+            socket.currentRoomId = user.currentRoomId;
+            socket.username = user.firstName + ' ' + user.lastName;
+            socket.join(socket.currentRoomId);
+            let msg = '🔵   ' + socket.username + ' joined to the chat..';
+            socket.broadcast.to(socket.currentRoomId).emit('is_online', msg);
+          }
+        })
+        .catch(err => {
+          console.log(" ERROR while trying to get user data : " + err);
+        });
     });
 
     socket.on('message', function (msg) {
-      socket.broadcast.to(getUserRoomID(socket.id)).emit('message', msg);
+      console.log(msg);
+        socket.broadcast.to(socket.currentRoomId).emit('message', msg);
     });
 
     socket.on('joinRoom', function (r_id) {
+      console.log(r_id)
       socket.join(r_id);
-      addRoomNumber(socket.id, r_id);
+      socket.currentRoomId = r_id;
+      addRoomNumber(socket.email, r_id);
     });
 
     socket.on('roommates', function () {
-      socket.emit("roommates", sendRoommates(socket.id));
+      sendRoommates(socket);
     });
     
-    socket.on('disconnect', function(username) {
-        io.emit('is_online', '🔴 <i>' + getUserName(socket.id) + ' left the chat..</i>');
+    socket.on('roomName', function (rm) {
+      sendRoomName(rm, socket);
+    });
+    
+    socket.on('disconnect', function() {
+      let msg = '🔴   ' + socket.username + ' left the chat..';
+      socket.broadcast.to(socket.currentRoomId).emit('is_online', msg);
     })
   });
 }

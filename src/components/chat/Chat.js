@@ -13,22 +13,26 @@ class Chat extends React.Component {
   }
 
   componentDidMount() {
-    let io = this.props.value.io;
-    io.onmessage = evt => {
-      let message = (JSON.parse(evt.data));
-      message = JSON.parse(message.utf8Data);
+    var io = this.props.value.io;
+    io.on('message', (msg) => {
+      console.log("MESSAGE ", msg, ' ', typeof msg)
+      let message = (JSON.parse(msg));
+      message = JSON.parse(msg);
       this.addMessage(message)
-    }
+    });
 
-    this.props.value.io.on('is_online', function(username) {
+    io.on('is_online', (username) => {
       const message = { name : "" , text : username }
+      io.emit('roommates', "");
       this.addMessage(message)
-    })
+    });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value.user.currentRoomId !== this.props.value.user.currentRoomId ) {
-      this.setState({messages : []});
+    if(nextProps.value.user) {
+      if (nextProps.value.user.currentRoomId !== this.props.value.state.user.currentRoomId ) {
+        this.setState({messages : []});
+      }
     }
   }
 
@@ -38,8 +42,8 @@ class Chat extends React.Component {
 
   submitMessage = messageString => {
     if(messageString !== undefined && messageString !== "") {
-      const message = { name : this.props.value.user.firstname + this.props.value.user.lastname, text: messageString }
-      if (this.props.value.wsConnected === true) {
+      const message = { name : this.props.value.state.user.firstName + this.props.value.state.user.lastName, text: messageString }
+      if (this.props.value.state.wsConnected === true) {
         this.props.value.io.emit("message", JSON.stringify(message))
         this.addMessage(message)
       }

@@ -19,16 +19,19 @@ const schema = new Schema({
   },
   currentRoomId : {
     type: String,
+    default: 'dafault',
     required: false 
   },
   password: {
     type: String,
     required: true
   },
-  socket_id: {
+  token: {
     type: String,
     required: false 
   }
+}, {
+  collection: 'User'
 });
 
 module.exports = mongoose.model('User', schema);

@@ -1,49 +1,80 @@
-let jwt = require('jsonwebtoken');
-const config = require('./config.js');
+const Room = require('./room.js');
+const RoomsJson = require('./rooms.json');
 
-let checkToken = (req, res, next) => {
-  let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
-
-  if (token) {
-    if (token.startsWith('Bearer ')) {
-      token = token.slice(7, token.length);
-    }
-    jwt.verify(token, config.secret, (err, decoded) => {
-      if (err) {
-        return res.json({
-          success: false,
-          message: 'Token is not valid'
-        });
-      } else {
-        req.decoded = decoded;
-        next();
-      }
-    });
-  } else {
-    return res.json({
-      success: false,
-      message: 'Auth token is not supplied'
-    });
-  }
-};
+getMessages = () => {
+  Rooms.find({'roomId': roomId}).sort('-date').limit(15).exec(function(err, posts){
+    console.log("Emitting Update...");
+    socket.emit("Update", posts.length);
+    console.log("Update Emmited");
+  });
+}
 
 let getRoomsList = (req, res, next) => {
-  try {
-    let rList = config.read("./rooms.json");
-    delete rList.list;
-    return res.json({
-      success: ture,
-      rooms : rList, 
+  Room.find({}).exec()
+    .then(response => {
+      if (!response) {
+        return res.status(500).json({
+          status: 'error',
+          code : '500',
+          data : 'Something is wrong. Please try again later.'
+        });
+      } else {
+        return res.json({
+          status: 'success',
+          code: '200',
+          rooms : response
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({
+        status: 'error',
+        code : '500',
+        data : 'Something is wrong. Please try again later.'
+      });
     });
-  } catch (e){
-    return res.json({
-      success: false,
-      message: 'Something went wrong'
-    });
-  }
 };
 
+//Generating uinique ID for each WebSocket client
+let getUniqueID = () => {
+  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  return s4() + s4() + '-' + s4();
+};
+
+let importRoomsIntoDb = () => {
+  //TODO create new room option
+  if(RoomsJson.length < 0) {
+    const r = new Room();
+    r._id = new mongoose.Types.ObjectId();
+    r.save();
+    return;
+  }
+  try {
+    Object.keys(RoomsJson).forEach(function (key) {
+      const item = RoomsJson[key].room;
+      let newRoom = new Room();
+      newRoom._id = new mongoose.Types.ObjectId();
+      if (item != null) {
+        Room.findOne({'name': item.name}).exec()
+          .then( room => {
+            if(room != null){
+              return;
+            } else {
+              let id = getUniqueID();
+              newRoom.name = item.name ? item.name : id;
+              newRoom.save();
+            }
+          })
+      }
+    })
+  } catch (err) {
+    console.log(" ERROR while importing rooms data : " + err);
+  };
+}
+
 module.exports = {
-  checkToken: checkToken,
-  getRoomsList : getRoomsList 
+  getRoomsList : getRoomsList,
+  getMessages : getMessages,
+  importRoomsIntoDb : importRoomsIntoDb ,
 }

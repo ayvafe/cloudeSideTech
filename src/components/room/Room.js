@@ -11,38 +11,52 @@ class Room extends React.Component {
     }
   }
 
-  getRooms = () => { 
+  componentDidMount() {
     const url = [config.serverUrl, ":", config.serverPort,"/rooms_list"].join('')
 
     fetch(url, {
       method: "GET",
-      "Content-Type" : 'application/json'
+      headers: {
+        "Content-Type" : 'application/json'
+      },
     })
       .then(res => res.json())
       .then(resp => {
         this.setState({rooms : resp.rooms})
       })
       .catch(err => {
+        this.setState({rooms : []})
         console.error('Error while user login : ' + err);
-      })
+      });
   }
 
   onClick  = event => { 
     if(event.target.id) {
       this.props.value.io.emit('joinRoom', event.target.id);
+      this.props.value.io.emit('roomName', event.target.id);
+      this.props.value.io.emit('roommates', "");
       this.props.value.updateValue("user.currentRoomId", event.target.id);
     }
   }
 
   render() {
-    return (
-      <ul id="room-bar">
+    if(!this.state.rooms || !this.state.rooms.length || this.state.rooms.length <= 0) {
+      return (
+        <ul id="room-bar">
         <li>Available Rooms</li>
-        {(this.state.rooms).map((room, index) =>
-          <li key={room.id} id={room.id} onClick={() => this.onClick()}>{room.id}</li>
-        )}
-      </ul>
-    )}
+        </ul>
+      )
+  }
+  return (
+    <ul id="room-bar">
+    <li>Available Rooms</li>
+    <ul>
+      {(this.state.rooms).map((room, index) =>
+        <li key={room._id ? room._id : ''} id={room._id ? room._id : ''} onClick={(e) => this.onClick(e)}>{room.name ? room.name : ''}</li>
+      )}
+    </ul>
+    </ul>
+  )}
 }
 
 const nestedComponentWithSocket = props => (

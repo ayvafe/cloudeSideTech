@@ -14,7 +14,6 @@ class SignInPage extends React.Component {
       password : '',
       messageText : 'Enter your email and password to login into your account',
       activeClass : false, 
-      logedIn : false,
       signUpClicked : false, 
     };
   }
@@ -48,10 +47,10 @@ class SignInPage extends React.Component {
       .then(resp => {
         if(resp.data && resp.data.token && resp.data.user) {
           resp = resp.data;
-          this.setState({ logedIn : true })
           localStorage.setItem('messenger-token', resp.token)
           this.props.value.updateValue("token", resp.token);
           this.props.value.updateValue("user", resp.user);
+          this.props.value.updateValue("logedIn", true);
         } else if(resp.data && resp.data.title) {
           this.setState({messageText : resp.data.title})
         } else {
@@ -88,11 +87,8 @@ class SignInPage extends React.Component {
     }
   }
 
-  renderFunction() {
-  }
-
   render() {
-    if (this.state.logedIn === true) {
+    if (this.props.value.state.logedIn === true) {
       return <Redirect to='/user' />
     } else if(this.state.signUpClicked === true) {
       return <Redirect to='/signUp' />
