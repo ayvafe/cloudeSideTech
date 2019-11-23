@@ -28,9 +28,10 @@ class Chat extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.value.user) {
-      if (nextProps.value.user.currentRoomId !== this.props.value.state.user.currentRoomId ) {
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.value.user && this.props.value.user) {
+      let roomId = prevProps.value.user.currentRoomId;
+      if (this.props.value.user.currentRoomId !== roomId) {
         this.setState({messages : []});
       }
     }

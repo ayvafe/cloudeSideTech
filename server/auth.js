@@ -1,4 +1,3 @@
-const config = require('./config');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
@@ -6,6 +5,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const dbUrl = '';
 const User = require('./user.js'); 
 const Room = require('./room.js');
+
+require('dotenv').config();
 
 //Response error to client request
 var error = (res) => {
@@ -56,7 +57,7 @@ var signup = (req, res, next) => {
               firstName: newUser.firstName,
               lastName: newUser.lastName,
             },
-            'reactJsmessengerapp',
+            process.env.JWT_KEY,
             { 
               expiresIn: '24h' // expires in 24 hours
             }
@@ -112,7 +113,7 @@ var login = (req, res, next) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
               },
-              'reactJsmessengerapp',
+              process.env.JWT_KEY,
               { 
                 expiresIn: '24h' // expires in 24 hours
               }
@@ -142,7 +143,7 @@ let checkToken = (req, res, next) => {
   let token = req.headers['authorization'];
   const jwt = require('jsonwebtoken');
   if (token) {
-    jwt.verify(token, 'reactJsmessengerapp', (err, decoded) => {
+    jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
       if (err) {
         return res.json({
           success: false,

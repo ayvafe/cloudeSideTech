@@ -8,10 +8,9 @@ import notFoundPage from './components/notFoundPage';
 import socket from 'socket.io-client';
 import SocketContext from './socket_context';
 import { Route, Switch,  BrowserRouter as Router } from 'react-router-dom'
-import * as config from './config.js';
 import * as Utilities from './utils/utilities.js';
 
-const wsURL = [config.serverUrl, ":", config.serverPort].join('');
+const wsURL = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT].join('');
 
 class App extends React.Component {
   constructor(props) {
@@ -77,7 +76,7 @@ class App extends React.Component {
   }
 
   getUserInfo = () => {
-    const url = [config.serverUrl, ":", config.serverPort,"/login_with_token"].join('')
+    const url = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT,"/login_with_token"].join('')
     const  t = localStorage.getItem('messenger-token')
 
     axios.get( url, { headers: { authorization : t }})

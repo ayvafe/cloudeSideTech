@@ -1,6 +1,5 @@
 import React from 'react';
 import './signInPage.css';
-import * as config from '../../config.js';
 import SocketContext from '../../socket_context';
 import { Redirect } from 'react-router-dom'
 
@@ -33,7 +32,7 @@ class SignInPage extends React.Component {
   }
 
   sendLoginRequest = () => {
-    const url = [config.serverUrl, ":", config.serverPort,"/login"].join('')
+    const url = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT,"/login"].join('')
     const body = {password : this.state.password, email : this.state.email}
 
     fetch(url, {

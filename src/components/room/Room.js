@@ -1,7 +1,6 @@
 import React from 'react';
 import SocketContext from '../../socket_context';
 import './Room.css';
-import * as config from '../../config.js';
 
 class Room extends React.Component {
   constructor(props) {
@@ -12,7 +11,7 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
-    const url = [config.serverUrl, ":", config.serverPort,"/rooms_list"].join('')
+    const url = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT,"/rooms_list"].join('')
 
     fetch(url, {
       method: "GET",

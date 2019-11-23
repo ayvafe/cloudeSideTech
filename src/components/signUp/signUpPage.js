@@ -1,6 +1,5 @@
 import React from 'react';
 import './signUpPage.css';
-import * as config from '../../config.js';
 import SocketContext from '../../socket_context';
 import { Redirect} from 'react-router-dom'
 
@@ -50,7 +49,7 @@ class SignUpPage extends React.Component {
   
   sendSignUpRequest = () => { 
     if((this.checkData())) {
-      const url = [config.serverUrl, ":", config.serverPort,"/sign_up"].join('')
+      const url = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT,"/sign_up"].join('')
       const body = {
         password : this.state.password, 
         email : this.state.email, 

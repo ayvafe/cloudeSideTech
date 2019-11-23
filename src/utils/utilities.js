@@ -1,6 +1,5 @@
 import axios from 'axios'
-import * as config from '../config.js';
-const url = [config.serverUrl, ":", config.serverPort,"/check_token"].join('')
+const url = [process.env.REACT_APP_SERVER_HOST, ":", process.env.REACT_APP_SERVER_PORT,"/check_token"].join('')
 
 export const isLoggedIn = async () => {
   let t = localStorage.getItem('messenger-token');
